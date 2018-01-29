@@ -13,8 +13,8 @@ sudo: required
 dist: trusty
 
 before_install:
-  - scripts/install_dgraph.sh
+  - sudo curl https://get.dgraph.io -sSf | bash
+  - dgraph zero --port_offset -2000
 
 script:
-  - scripts/build.sh
   - "MIX_ENV=test mix do deps.get, test && mix compile"

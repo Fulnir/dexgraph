@@ -7,7 +7,7 @@ config :elixir, ansi_enabled: true
 config :logger, level: :warn
 
 config :logger, :console,
-  format: "📓  $levelpad$message\n",
+  format: "📓 TESTING $levelpad$message\n",
   colors: [
     warn: IO.ANSI.color(172),
     info: IO.ANSI.color(229),
@@ -22,4 +22,4 @@ config :logger, :console,
 # http://sheldonkreger.com/understanding-config-in-elixir.html
 # IO.inspect(Application.get_env(Seneca, Seneca.DexGraph, :server)
 config :dexgraph,
-  server: "http://localhost:8080" # 8082
+  server: "http://localhost:8082" # 8082
