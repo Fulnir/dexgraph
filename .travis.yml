@@ -1,0 +1,20 @@
+language: elixir
+
+elixir:
+  - 1.5.2
+
+otp_release:
+  -  19.0
+
+env:
+  - MIX_ENV=test
+
+sudo: required
+dist: trusty
+
+before_install:
+  - scripts/install_dgraph.sh
+
+script:
+  - scripts/build.sh
+  - "MIX_ENV=test mix do deps.get, test && mix compile"
