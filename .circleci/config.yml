@@ -14,13 +14,10 @@ jobs:
       - checkout
       - run:
             name: dgraph install
-            command: curl https://get.dgraph.io -sSf | bash
+            command: scripts/install_dgraph.sh
       - run:
             name: dgraph run zero
-            command: dgraph zero --port_offset -2000
-      - run:
-            name: dgraph run server
-            command: dgraph server --memory_mb 2048 --zero localhost:5080
+            command: scripts/build.sh
       - run: mix local.rebar --force
       - run: mix local.hex --force
       - run: mix deps.get
