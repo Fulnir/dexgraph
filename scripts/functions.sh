@@ -38,5 +38,5 @@ function startZero {
   echo -e "dgraph zero ios started ------------------------------------- \n"
 	sleep $sleepTime
   echo -e "dgraph zero ios started ------------3------------------------- \n"
-  return 0
+  return 1
 }
