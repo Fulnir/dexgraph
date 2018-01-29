@@ -5,9 +5,9 @@ set -x
 source scripts/functions.sh
 
 startZero &
-start
+start &
 
 
 #./gradlew check jacocoTestReport coveralls
 
-quit 0
+# quit 0

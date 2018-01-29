@@ -26,7 +26,7 @@ function start {
   echo -e "Starting first server."
   dgraph server --memory_mb 2048 --zero localhost:5080
   # Wait for membership sync to happen.
-  mix test
+  
   sleep $sleepTime
   return 0
 }
