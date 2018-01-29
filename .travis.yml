@@ -15,9 +15,6 @@ dist: trusty
 before_install:
   - sudo curl https://get.dgraph.io -sSf | bash
   - dgraph zero --port_offset -2000
-  - sleep 30
-  - dgraph server --memory_mb 2048 --zero localhost:5080
-	- sleep 30
 
 script:
   - "MIX_ENV=test mix do deps.get, test && mix compile"
