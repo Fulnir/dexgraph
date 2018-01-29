@@ -2,7 +2,7 @@
 set -e
 set -x
 
-source ././scripts/functions.sh
+source ~/dexgraph/scripts/functions.sh
 
 startZero
 start
