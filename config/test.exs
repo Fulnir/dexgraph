@@ -22,4 +22,4 @@ config :logger, :console,
 # http://sheldonkreger.com/understanding-config-in-elixir.html
 # IO.inspect(Application.get_env(Seneca, Seneca.DexGraph, :server)
 config :dexgraph,
-  server: "http://localhost:8080" # 8082
+  server: "http://localhost:8082" # 8082

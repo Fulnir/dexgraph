@@ -4,7 +4,7 @@ elixir:
   - 1.5.2
 
 otp_release:
-  -  19.0
+  -  20.0
 
 env:
   - MIX_ENV=test
@@ -13,8 +13,8 @@ sudo: required
 dist: trusty
 
 before_install:
-  - scripts/install_dgraph.sh
+  - sudo curl https://get.dgraph.io -sSf | bash
+  - nohup dgraph --memory_mb=1025 &
 
 script:
-  - scripts/build.sh
   - "MIX_ENV=test mix do deps.get, test && mix compile"
