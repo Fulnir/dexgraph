@@ -24,7 +24,7 @@ function quit {
 
 function start {
   echo -e "Starting first server."
-  dgraph server -p --memory_mb=4096 --zero localhost:5080
+  dgraph server --memory_mb 2048 --zero localhost:5080
   # Wait for membership sync to happen.
   sleep $sleepTime
   return 0
