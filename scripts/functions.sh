@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-sleepTime=30
+sleepTime=15
 
 function quit {
   echo "Shutting down dgraph server and zero"
