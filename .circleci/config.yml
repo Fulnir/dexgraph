@@ -17,7 +17,7 @@ jobs:
             command: ls
       - run:
             name: dgraph install
-            command: sudo ./scripts/install_dgraph.sh
+            command: /scripts/install_dgraph.sh
       - run:
             name: dgraph run zero
             command: sudo scripts/build.sh
