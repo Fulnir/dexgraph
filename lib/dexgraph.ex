@@ -152,7 +152,7 @@ defmodule DexGraph do
   end
 
   @doc """
-  Erzeugt einen neuen Knoten. Nur das Prädikat und das Objekt werden benötigt.
+  Returns a new created node. Only one predicate with object needed.
 
   ## Examples
 
@@ -173,8 +173,7 @@ defmodule DexGraph do
   end
 
   @doc """
-  Erzeugt einen neuen Knoten. Nicht nur das Prädikat und das Objekt werden benötigt,
-  sondern auch die Subjekt-uid.
+  Returns a new created node. A predicate with object and a Subjekt-uid are needed.
 
   ## Examples
 
@@ -194,14 +193,14 @@ defmodule DexGraph do
   end
 
   @doc """
-  Erzeugt einen Knoten.
+  Returns a new node. 
 
   """
   @spec mutate_node(Struct) :: Struct
   def mutate_node(node_struct) do
     # Den Struct auflösen
     # node_struct |> Enum.into(HashDict.new)
-
+    
     {:ok, true}
   end
 
