@@ -47,6 +47,10 @@ function testing {
   # Wait for membership sync to happen.
   sleep $sleepTime
   sleep $sleepTime
+  mix local.rebar --force
+  mix local.hex --force
+  mix deps.get
+  mix deps.compile
   mix test
   return 0
 }
