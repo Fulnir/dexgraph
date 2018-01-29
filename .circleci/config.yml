@@ -15,14 +15,10 @@ jobs:
       - run:
             name: dgraph setup
             command: |
-              - sudo curl https://get.dgraph.io -sSf
+              - sudo curl https://get.dgraph.io -sSf | bash
               - nohup dgraph --memory_mb=1025 &
-              - echo -e "Starting first server."
               - dgraph zero --port_offset -2000
-              - sleep 30
-              - echo -e "Starting dgraph zero.\n"
-              - dgraph server --memory_mb 2048 --zero localhost:5080
-              - sleep 30
+              
       - run: mix local.rebar --force
       - run: mix local.hex --force
       - run: mix deps.get
