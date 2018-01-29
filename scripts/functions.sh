@@ -33,7 +33,7 @@ function start {
 
 function startZero {
 	echo -e "Starting dgraph zero.\n"
-  dgraph zero --port_offset -1998
+  dgraph zero --port_offset -2000
   # To ensure dgraph doesn't start before dgraphzero.
 	# It takes time for zero to start on travis(mac).
   echo -e "dgraph zero ios started ------------------------------------- \n"
