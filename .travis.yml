@@ -10,6 +10,7 @@ env:
   - MIX_ENV=test
 
 sudo: required
+
 dist: trusty
 
 before_install:
