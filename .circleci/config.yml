@@ -13,7 +13,7 @@ jobs:
       - checkout
       - run:
             name: dgraph install
-            command: sudo scripts/install_dgraph.sh
+            command: sudo sh scripts/install_dgraph.sh
       - run:
             name: dgraph run zero
             command: sudo scripts/build.sh
