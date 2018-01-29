@@ -7,7 +7,7 @@ config :elixir, ansi_enabled: true
 config :logger, level: :warn
 
 config :logger, :console,
-  format: "📓  $levelpad$message\n",
+  format: "📓 TESTING $levelpad$message\n",
   colors: [
     warn: IO.ANSI.color(172),
     info: IO.ANSI.color(229),
