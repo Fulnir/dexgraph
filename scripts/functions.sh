@@ -36,4 +36,5 @@ function startZero {
   # To ensure dgraph doesn't start before dgraphzero.
 	# It takes time for zero to start on travis(mac).
 	sleep $sleepTime
+  return 0
 }

@@ -12,7 +12,7 @@ jobs:
     steps:
       - checkout
       - run:
-            name: dgraph install
+            name: make build.sh executable
             command: chmod +x scripts/build.sh
       - run:
             name: dgraph install
