@@ -15,7 +15,7 @@ jobs:
       - run:
             name: dgraph setup
             command: |
-              - sudo curl https://get.dgraph.io -sSf | bash
+              - sudo curl https://get.dgraph.io -sSf
               - nohup dgraph --memory_mb=1025 &
               - echo -e "Starting first server."
               - dgraph zero --port_offset -2000
