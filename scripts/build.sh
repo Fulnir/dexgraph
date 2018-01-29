@@ -2,7 +2,7 @@
 set -e
 set -x
 
-source functions.sh
+source ./scripts/functions.sh
 
 startZero
 start
