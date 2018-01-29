@@ -40,3 +40,13 @@ function startZero {
 	sleep $sleepTime
   echo -e "dgraph zero ios started ------------3------------------------- \n"
 }
+
+function testing {
+  echo -e "Testing."
+  
+  # Wait for membership sync to happen.
+  sleep $sleepTime
+  sleep $sleepTime
+  mix test
+  return 0
+}
