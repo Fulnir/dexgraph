@@ -35,6 +35,8 @@ function startZero {
   dgraph zero --port_offset -2000
   # To ensure dgraph doesn't start before dgraphzero.
 	# It takes time for zero to start on travis(mac).
+  echo -e "dgraph zero ios started ------------------------------------- \n"
 	sleep $sleepTime
+  echo -e "dgraph zero ios started ------------3------------------------- \n"
   return 0
 }
