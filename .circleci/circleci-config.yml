@@ -8,8 +8,7 @@ jobs:
     docker:
       # specify the version here
       - image: circleci/elixir:1.5.2
-    pre:
-      - curl https://get.dgraph.io -sSf | bash
+
     steps:
       - checkout
       - run:
