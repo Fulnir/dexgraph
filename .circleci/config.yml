@@ -10,17 +10,18 @@ jobs:
       - image: circleci/elixir:1.5.2
     pre:
       - curl https://get.dgraph.io -sSf | bash
+    post:
+      - dgraph zero --port_offset -1998:
+        background: true
+      - sleep 20
+      - dgraph server --memory_mb 2048 --zero localhost:5082 -o 2:
+        background: true
+      - sleep 20
     steps:
       - checkout
       - run:
             name: make build.sh executable
             command: chmod +x scripts/build.sh
-      - run:
-            name: dgraph install
-            command: sudo sh scripts/install_dgraph.sh
-      - run:
-            name: dgraph run zero
-            command: sudo scripts/build.sh
       #- run: mix local.rebar --force
       #- run: mix local.hex --force
       #- run: mix deps.get
