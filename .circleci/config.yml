@@ -22,8 +22,8 @@ jobs:
       - run:
             name: make build.sh executable
             command: chmod +x scripts/build.sh
-      #- run: mix local.rebar --force
-      #- run: mix local.hex --force
-      #- run: mix deps.get
-      #- run: mix deps.compile
-      #- run: mix test
+      - run: mix local.rebar --force
+      - run: mix local.hex --force
+      - run: mix deps.get
+      - run: mix deps.compile
+      - run: mix test
