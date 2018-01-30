@@ -52,6 +52,7 @@ function testing {
   mix deps.get
   mix deps.compile
   mix test
+  mix coveralls
   echo -e "Finnished Testing --------------------------------------------"
   return 0
 }

@@ -9,6 +9,7 @@ defmodule Dexgraph.MixProject do
       start_permanent: Mix.env() == :prod,
       package: package(),
       description: description(),
+      test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
         "coveralls":        :test,
         "coveralls.detail": :test,
