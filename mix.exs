@@ -36,7 +36,8 @@ defmodule Dexgraph.MixProject do
     {:ex_dash, "~> 0.1.5", only: :dev},         # For Dash  mix docs.dash
     {:inch_ex, "~> 0.5", only: [:dev, :test]}, # mix inch
     {:excoveralls,  "~> 0.7.2", only: :test},
-    {:mix_test_watch, "~> 0.2", only: :dev},  # Automatically run your Elixir project's tests each time you save a file.
+    {:ex_unit_notifier, "~> 0.1", only: :test},
+    {:mix_test_watch, "~> 0.2", only: :dev, runtime: false},  # Automatically run your Elixir project's tests each time you save a file.
     {:poison, "~> 2.0", override: true},
     {:httpoison, "~> 1.0"},
     {:bunt, "~> 0.2.0"}

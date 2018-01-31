@@ -15,13 +15,11 @@ defmodule DexGraph do
 
   require Logger
 
-  @doc """
-  All unique predicates are defined in `@unique_predicates`.
-  Used in `is_unique_predicate?()``
-  """
+  # All unique predicates are defined in `@unique_predicates`.
+  # Used in `is_unique_predicate?()``
   @unique_predicates [:id]
 
-  @the_schema "name: string @index(exact, term) .\n  id: string @index(exact) .\n  comment: string .\n   namespace: uid .\n    inherit_from: uid .\n   type_of: uid .\n    user_id: uid .\n"  
+  # @the_schema "name: string @index(exact, term) .\n  id: string @index(exact) .\n  comment: string .\n   namespace: uid .\n    inherit_from: uid .\n   type_of: uid .\n    user_id: uid .\n"  
 
   @doc """
   This function is used to setup the test data for the
@@ -70,8 +68,8 @@ defmodule DexGraph do
   """
   def mutate_with_commit(a_query) do
     headers = [{"X-Dgraph-CommitNow", "true"}]
-    HTTPoison.post("#{Application.get_env(:dexgraph, :server)}/mutate", a_query, headers)
-    |> get_data_from_response()
+    post_response = HTTPoison.post("#{Application.get_env(:dexgraph, :server)}/mutate", a_query, headers)
+    get_data_from_response(post_response)
   end
  
   # Returns: {:ok, data} or {:error, error}
@@ -198,14 +196,38 @@ defmodule DexGraph do
   @spec mutate_node(Struct) :: Struct
   def mutate_node(node_struct) do
     # Den Struct auflösen
-    # node_struct |> Enum.into(HashDict.new)
-    {:ok, response_data} = mutate_node("name", "Edwin")
-    # Logger.warn "response_data #{inspect response_data}"
-    identifier = response_data["uids"]["identifier"]
-    # Logger.warn "identifier #{inspect identifier}"
-    {:ok, response_data} = mutate_node(identifier, "address", "Wassenberg")
+    content = node_struct |> Enum.into(Map.new)
 
-    {:ok, response_data}
+    # Logger.warn "node_struct #{inspect content}"
+    mutate_string = "{\n  set {\n"
+    lambda =  fn 
+        ({predicate_key, object_value}, mutate_string) when is_atom(object_value) ->
+      #{:ok, node} = mutate_node("id", "EdwinBühler")
+      #identifier = node["uids"]["identifier"]    
+      #{:ok, _} = mutate_node(identifier, "id", "EdwinBühler")
+
+      if is_unique_predicate?(predicate_key) do
+        #mutate_with_commit(~s({set{_:identifier <#{predicate}> #{object} .}}))
+      else
+        #mutate_with_commit(~s({set{_:identifier <#{predicate}> "#{object}" .}}))
+       #mutate_string <> object_value
+      end
+      mutate_string
+
+        {predicate_key, object_value}, mutate_string ->
+          mutate_string = mutate_string <> "    _:identifier"
+          mutate_string = mutate_string <> " \<" <> Atom.to_string(predicate_key) <> "\>"
+          mutate_string = mutate_string <> " \"" <> object_value <> "\" . \n"
+          mutate_string
+    end
+
+    mutate_string = Enum.reduce(content, mutate_string, lambda)
+
+    mutate_string = mutate_string <> "  }\n}"
+    IO.puts mutate_string
+
+   
+    mutate_with_commit(mutate_string)
   end
 
   @doc """

@@ -18,7 +18,7 @@ defmodule DexGraphTest do
       dob: dateTime .
       location: geo @index(geo) .
       occupations: [string] @index(term) ."
-  
+
     # Der Tokenizer funktioniert nicht für alle Sprachen.
     # Deshalb im Test term für das Schema benutzen.
     @testing_data ~s({
@@ -76,7 +76,7 @@ defmodule DexGraphTest do
     }
   }          
   )
-  
+
     setup_all do
         IO.puts "DexGraph setup all: #{Application.get_env(:dexgraph, :server)}"
         # Komplette Datenbank löschen
@@ -87,12 +87,12 @@ defmodule DexGraphTest do
         _ = write_testing_data(@testing_data)
         :ok
     end
-  
+
     test "Query unknown node" do
         {result_atom, _} = query_node("name", "test_dummy")
         assert :not_found == result_atom
     end
-  
+
     test "Is the predicate unique?" do
         assert true == is_unique_predicate?(:id)
         assert false == is_unique_predicate?(:friend)
@@ -119,11 +119,11 @@ defmodule DexGraphTest do
         {:ok, node} = query_node("id", "EdwinBühler")
         assert identifier == node["uid"]
     end
-  
+
     test "Add node as struct" do
-        {:ok, node} = mutate_node(%{node_type: :person, name: "Edwin", address: "Wassenberg"})
+        {:ok, node} = mutate_node(%{dex_node_type: :person,
+        name: "Edwin", address: "Wassenberg"})
         assert "Success" == node["code"]
     end
-  
+
   end
-  
