@@ -4,7 +4,7 @@
 sleepTime=15
 
 function quit {
-  echo "Shutting down dgraph server and zero"
+  echo "🛠 Shutting down dgraph server and zero"
   curl -s localhost:8082/admin/shutdown
   # Kill Dgraphzero
   kill -9 $(pgrep -f "dgraph zero") > /dev/null
@@ -13,7 +13,7 @@ function quit {
   then
     while pgrep dgraph;
     do
-      echo "Sleeping for 5 secs so that Dgraph can shutdown."
+      echo "😴💤 Sleeping for 5 secs so that Dgraph can shutdown."
       sleep 5
     done
   fi
@@ -23,7 +23,7 @@ function quit {
 }
 
 function start {
-  echo -e "Starting first server."
+  echo -e "🛠 Starting first server."
   dgraph server --memory_mb 2048 --zero localhost:5082 -o 2
   # Wait for membership sync to happen.
   
@@ -32,20 +32,23 @@ function start {
 }
 
 function startZero {
-	echo -e "Starting dgraph zero.\n"
+	echo -e "🛠 Starting dgraph zero.\n"
   dgraph zero --port_offset -1998
   # To ensure dgraph doesn't start before dgraphzero.
 	# It takes time for zero to start on travis(mac).
-  echo -e "dgraph zero ios started ------------------------------------- \n"
+  echo -e "🛠 dgraph zero ios started ------------------------------------- \n"
+  echo "😴💤 Sleeping"
 	sleep $sleepTime
-  echo -e "dgraph zero ios started ------------3------------------------- \n"
+  echo -e "🛠 dgraph zero ios started ------------3------------------------- \n"
 }
 
 function testing {
   echo -e "Testing."
   
   # Wait for membership sync to happen.
+  echo "😴💤 Sleeping"
   sleep $sleepTime
+  echo "😴💤 Sleeping"
   sleep $sleepTime
   mix local.rebar --force
   mix local.hex --force

@@ -70,12 +70,11 @@ defmodule DexGraph do
   """
   def mutate_with_commit(a_query) do
     headers = [{"X-Dgraph-CommitNow", "true"}]
-
     HTTPoison.post("#{Application.get_env(:dexgraph, :server)}/mutate", a_query, headers)
     |> get_data_from_response()
   end
-
-  # Returns: {:ok, data} or {:error, error} 
+ 
+  # Returns: {:ok, data} or {:error, error}
   @spec get_data_from_response(Tuple) :: Tuple
   defp get_data_from_response({:ok, response}) do
     case Poison.decode(response.body) do
@@ -86,7 +85,7 @@ defmodule DexGraph do
         # Logger.error "query #{inspect body}"
         case data = body["data"] do
           nil ->
-            Logger.warn(List.first(body["errors"])["message"])
+            #Logger.warn(List.first(body["errors"])["message"])
             {:error, List.first(body["errors"])["message"]}
 
           _ ->
@@ -133,7 +132,7 @@ defmodule DexGraph do
             }
           }") do
       {:ok, response} ->
-        Logger.warn("Response: #{inspect(response)}")
+        #Logger.warn("Response: #{inspect(response)}")
 
         case List.first(response["find_node"]) do
           nil ->
@@ -200,8 +199,13 @@ defmodule DexGraph do
   def mutate_node(node_struct) do
     # Den Struct auflösen
     # node_struct |> Enum.into(HashDict.new)
-    
-    {:ok, true}
+    {:ok, response_data} = mutate_node("name", "Edwin")
+    # Logger.warn "response_data #{inspect response_data}"
+    identifier = response_data["uids"]["identifier"]
+    # Logger.warn "identifier #{inspect identifier}"
+    {:ok, response_data} = mutate_node(identifier, "address", "Wassenberg")
+
+    {:ok, response_data}
   end
 
   @doc """
@@ -211,7 +215,7 @@ defmodule DexGraph do
 
   The predicate <id> is mostly unique. The predicate <name> not
 
-  Sample list: ```@unique_predicates [:id]```
+  Sample list: `@unique_predicates [:id]`
 
   ## Examples
 
