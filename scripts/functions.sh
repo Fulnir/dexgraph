@@ -57,6 +57,7 @@ function testing {
   mix test
   mix coveralls.json
   bash <(curl -s https://codecov.io/bash)
+  mix coveralls.circle
   echo -e "Finnished Testing --------------------------------------------"
   return 0
 }
