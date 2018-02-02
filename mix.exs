@@ -53,7 +53,7 @@ defmodule Dexgraph.MixProject do
     # These are the default files included in the package
     [
       name: :dgraph_ex,
-      files: ["lib", "mix.exs", "README*", "LICENSE*", ".iex.exs"],
+      files: ["lib", "mix.exs", "README*", "LICENSE*"],
       maintainers: ["Edwin Bühler"],
       licenses: ["MIT"],
       links: %{"GitHub" => "https://github.com/Fulnir/dexgraph"}
@@ -63,7 +63,7 @@ defmodule Dexgraph.MixProject do
   defp docs do
     [
       name: "Dexgraph",
-      main: "README",
+      #main: "README",
       extra_section: "guides",
       assets: "guides/images",
       formatters: ["html", "epub"],

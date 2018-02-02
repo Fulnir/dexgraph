@@ -55,7 +55,8 @@ function testing {
   mix deps.get
   mix deps.compile
   mix test
-  mix coveralls
+  mix coveralls.json
+  bash <(curl -s https://codecov.io/bash)
   echo -e "Finnished Testing --------------------------------------------"
   return 0
 }
