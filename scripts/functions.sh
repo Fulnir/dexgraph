@@ -61,6 +61,7 @@ function testing {
   echo "--------------------Circle CI------------------------"
   bash <(curl -s https://codecov.io/bash)
   # mix coveralls.circle
+  mix inch.report
   echo -e "Finnished Testing --------------------------------------------"
   return 0
 }
