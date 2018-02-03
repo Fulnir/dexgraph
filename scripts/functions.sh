@@ -55,9 +55,12 @@ function testing {
   mix deps.get
   mix deps.compile
   mix test
+  echo "--------------------------------------------"
   mix coveralls.json
+  echo "--------------------------------------------"
+  echo "--------------------Circle CI------------------------"
   bash <(curl -s https://codecov.io/bash)
-  mix coveralls.circle
+  # mix coveralls.circle
   echo -e "Finnished Testing --------------------------------------------"
   return 0
 }

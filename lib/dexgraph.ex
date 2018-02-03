@@ -170,7 +170,9 @@ defmodule DexGraph do
   end
 
   @doc """
-  Returns a new created node. A predicate with object and a Subjekt-uid are needed.
+  Create a new node and mutate it. A predicate with object and a Subject-uid are needed.
+
+  Returns `{:ok, body}` or `{:error, error}`.
 
   ## Examples
 
@@ -238,6 +240,8 @@ defmodule DexGraph do
   The predicate <id> is mostly unique. The predicate <name> not
 
   Sample list: `@unique_predicates [:id]`
+
+  Returns `true` or `false`.
 
   ## Examples
 
