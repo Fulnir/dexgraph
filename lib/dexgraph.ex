@@ -174,6 +174,12 @@ defmodule DexGraph do
 
   Returns `{:ok, body}` or `{:error, error}`.
 
+  ## Params
+
+    - subject_uid is the `uid` of the subject.
+    - predicate is the predicate as string
+    - object is the object as string
+
   ## Examples
 
       iex> {:ok, node} = DexGraph.mutate_node("0x1be", "name", "Edwin Bühler")

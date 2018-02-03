@@ -20,6 +20,9 @@ jobs:
       - run:
             name: dgraph run zero, run server
             command: sudo scripts/build.sh
+      - run:
+            name: Inch-CI
+            command: mix inch.report
       #
       # Elixir scripts runs from testing.sh testing()
       #
