@@ -59,9 +59,9 @@ function testing {
   mix coveralls.json
   echo "--------------------------------------------"
   echo "--------------------Circle CI------------------------"
-  bash <(curl -s https://codecov.io/bash)
+  bash <(curl -s https://codecov.io/bash) -t $CODECOV_TOKEN
   # mix coveralls.circle
-  mix inch.report
+  # mix inch.report
   echo -e "Finnished Testing --------------------------------------------"
   return 0
 }
