@@ -238,7 +238,7 @@ defmodule DexGraph do
   The predicate <id> is mostly unique. The predicate <name> not
 
   Sample list: `@unique_predicates [:id]`
-
+  
   ## Examples
 
       iex> DexGraph.is_unique_predicate?(:id)
