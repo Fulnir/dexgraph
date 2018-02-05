@@ -20,7 +20,7 @@ defmodule Dexgraph.MixProject do
       ],
       deps: deps(),
       # Docs
-      docs: docs() 
+      docs: docs()
     ]
   end
 
