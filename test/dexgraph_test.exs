@@ -8,8 +8,10 @@ defmodule DexGraphTest do
     doctest DexGraph
 
     import DexGraph
-
+    #import Person
+    #alias DexGraph.Person
     require Logger
+
 
     @testing_schema "id: string @index(exact).
       name: string @index(exact, term) @count .
@@ -124,6 +126,22 @@ defmodule DexGraphTest do
         {:ok, node} = mutate_node(%{dex_node_type: :person,
         name: "Edwin", address: "Wassenberg"})
         assert "Success" == node["code"]
+    end
+
+    describe "Dexgraph" do
+        test "Create a person and mutate to db" do
+
+            #IO.puts  "Create a primitive thing"
+            thing = %Person{thing_id: "MyThing", locked: false}
+            
+            assert "MyThing" == thing.thing_id
+            assert false == thing.locked
+            #thing_map = Map.from_struct(thing)
+            #IO.puts "Add thing as struct #{inspect thing_map}"
+            {:ok, node} = mutate_node_from_struct(thing)
+            #{:ok, node} = Thing.mutate_thing(thing)
+            assert "Success" == node["code"]
+        end
     end
 
   end

@@ -193,7 +193,7 @@ defmodule DexGraph do
   Returns a new node. 
 
   """
-  @spec mutate_node(Struct) :: Struct
+  @spec mutate_node(Map) :: Map
   def mutate_node(node_struct) do
     # Den Struct auflösen
     content = node_struct |> Enum.into(Map.new)
@@ -213,20 +213,62 @@ defmodule DexGraph do
        #mutate_string <> object_value
       end
       mutate_string
-
         {predicate_key, object_value}, mutate_string ->
           mutate_string = mutate_string <> "    _:identifier"
           mutate_string = mutate_string <> " \<" <> Atom.to_string(predicate_key) <> "\>"
           mutate_string = mutate_string <> " \"" <> object_value <> "\" . \n"
           mutate_string
     end
-
     mutate_string = Enum.reduce(content, mutate_string, lambda)
-
     mutate_string = mutate_string <> "  }\n}"
-    IO.puts mutate_string
+    Logger.debug "💡 mutate_string #{mutate_string}"
+    mutate_with_commit(mutate_string)
+  end
 
-   
+    @doc """
+  Returns a new node. 
+
+  """
+  @spec mutate_node(Struct) :: Struct
+  def mutate_node_from_struct(node_struct) do
+    Logger.debug " "
+    # Match the struct name
+    %{__struct__: struct_name} = node_struct
+    Logger.debug "💡 struct_name #{inspect struct_name}"
+    # Transform struct to map
+    map_from_struct = Map.from_struct(node_struct)
+    Logger.debug "💡 map_from_struct #{inspect map_from_struct}"
+
+# IO.puts "💡 node_struct #{inspect node_struct}"
+    
+    #IO.puts "is_struct #{inspect is_struct(node_struct)}"
+    
+    content = map_from_struct # map_from_struct |> Enum.into(Map.new)
+ #   IO.puts "💡 content #{inspect content}"
+    # Logger.warn "node_struct #{inspect content}"
+    mutate_string = "{\n  set {\n"
+    lambda =  fn 
+        ({predicate_key, object_value}, mutate_string) when is_atom(object_value) ->
+      #{:ok, node} = mutate_node("id", "EdwinBühler")
+      #identifier = node["uids"]["identifier"]    
+      #{:ok, _} = mutate_node(identifier, "id", "EdwinBühler")
+
+      if is_unique_predicate?(predicate_key) do
+        #mutate_with_commit(~s({set{_:identifier <#{predicate}> #{object} .}}))
+      else
+        #mutate_with_commit(~s({set{_:identifier <#{predicate}> "#{object}" .}}))
+       #mutate_string <> object_value
+      end
+      mutate_string
+        {predicate_key, object_value}, mutate_string ->
+          mutate_string = mutate_string <> "    _:identifier"
+          mutate_string = mutate_string <> " \<" <> Atom.to_string(predicate_key) <> "\>"
+          mutate_string = mutate_string <> " \"" <> object_value <> "\" . \n"
+          mutate_string
+    end
+    mutate_string = Enum.reduce(content, mutate_string, lambda)
+    mutate_string = mutate_string <> "  }\n}"
+    Logger.debug "💡 mutate_string #{mutate_string}"
     mutate_with_commit(mutate_string)
   end
 

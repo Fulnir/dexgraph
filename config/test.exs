@@ -4,10 +4,12 @@ use Mix.Config
 config :elixir, ansi_enabled: true
 
 # Print only warnings and errors during test
-config :logger, level: :warn
+config :logger, level: :debug
 
+# Logger.debug "💡 struct_name #{inspect struct_name}", [my_id: 1234]
 config :logger, :console,
-  format: "📓 TESTING $levelpad$message\n",
+  format: "🛡  $metadata$message\n",
+  metadata: [:function, :my_id], # metadata: [:module, :function, :my_id],
   colors: [
     warn: IO.ANSI.color(172),
     info: IO.ANSI.color(229),

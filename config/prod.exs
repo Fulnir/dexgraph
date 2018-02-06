@@ -7,7 +7,8 @@ config :elixir, ansi_enabled: true
 config :logger, level: :warn
 
 config :logger, :console,
-format: "📓 [$level] $date $time  $levelpad$message\n",
+  format: "📓 💎  [$level] $date $time  $levelpad$message\n",
+  metadata: [:function, :my_id], # metadata: [:module, :function, :my_id],
   colors: [
     warn: IO.ANSI.color(172),
     info: IO.ANSI.color(229),
