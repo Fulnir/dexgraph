@@ -191,50 +191,34 @@ defmodule DexGraph do
   end
 
   @doc """
-  Returns a new node. 
+  Returns a new node. {:ok, node}
 
   """
   @spec mutate_node(Map) :: Map
-  def mutate_node(node_struct) do
-    # Den Struct auflösen
-    content = node_struct #node_struct |> Enum.into(Map.new)
-    Logger.debug " "
-    # Match the struct name
-    #%{__struct__: struct_name} = node_struct
-    #Logger.debug fn -> "💡 struct_name #{inspect struct_name}" end
-
-    # Transform struct to map
-    map_from_struct = node_struct
-    Logger.debug fn -> "💡 map_from_struct #{inspect map_from_struct}" end
-
-# IO.puts "💡 node_struct #{inspect node_struct}"
-    #IO.puts "is_struct #{inspect is_struct(node_struct)}"
-    content =  map_from_struct #map_from_struct |> Enum.into(Map.new)
- #   IO.puts "💡 content #{inspect content}"
-    # Logger.warn "node_struct #{inspect content}"
+  def mutate_node(map_from_struct) do
     mutate_string = "{\n  set {\n"
     lambda =  fn ({predicate_key, object_value}, mutate_string)
       when is_atom(object_value) and predicate_key == :dex_node_type ->
-        Logger.debug fn -> "💡 dex_node_type is_atom #{inspect object_value}" end
+ #       Logger.debug fn -> "💡 dex_node_type is_atom #{inspect object_value}" end
         if is_unique_predicate?(predicate_key) do
     #mutate_with_commit(~s({set{_:identifier <#{predicate}> #{object} .}}))
         else
     #mutate_with_commit(~s({set{_:identifier <#{predicate}> "#{object}" .}}))
         #mutate_string <> object_value
         end
-        Logger.debug fn -> "💡 predicate_key #{inspect predicate_key}" end
-        Logger.debug fn -> "💡 object_value #{inspect object_value}" end
+ #       Logger.debug fn -> "💡 predicate_key #{inspect predicate_key}" end
+#        Logger.debug fn -> "💡 object_value #{inspect object_value}" end
         mutate_string
       {predicate_key, object_value}, mutate_string
         when is_atom(object_value) and predicate_key != :dex_node_type ->
-          Logger.debug fn -> "💡 is_atom #{inspect object_value}" end
+#          Logger.debug fn -> "💡 is_atom #{inspect object_value}" end
           mutate_string
           {predicate_key, object_value}, mutate_string
           when  is_list(object_value) ->
-            Logger.debug fn -> "💡  #{inspect object_value}" end
+#            Logger.debug fn -> "💡  #{inspect object_value}" end
             mutate_string
       {predicate_key, object_value}, mutate_string ->
-        Logger.debug fn -> "💡 object_value  #{inspect object_value}" end
+#        Logger.debug fn -> "💡 object_value  #{inspect object_value}" end
         object_value = if is_integer(object_value) do
           Integer.to_string(object_value)
         else
@@ -247,76 +231,35 @@ defmodule DexGraph do
           <> " \"" <> object_value <> "\" . \n"
         mutate_string
     end
-    Logger.debug fn -> "💡 mutate_string #{inspect mutate_string}" end
-    Logger.debug fn -> "💡 content #{inspect content}" end
-    mutate_string = Enum.reduce(content, mutate_string, lambda)
+ #   Logger.debug fn -> "💡 mutate_string #{inspect mutate_string}" end
+    mutate_string = Enum.reduce(map_from_struct, mutate_string, lambda)
     mutate_string = mutate_string <> "  }\n}"
-    Logger.debug fn -> "💡 mutate_string #{mutate_string}" end
+ #   Logger.debug fn -> "💡 mutate_string #{mutate_string}" end
     mutate_with_commit(mutate_string)
   end
 
-    @doc """
-  Returns a new node. 
+  @doc """
+  Create first a map of the struct and add the struct_name as
+  :dex_node_type value to the map
 
+  Returns a new node. {:ok, node}
+
+  Returns {:error, "The value is not a struct"} if
+  node_struct is not a struct
   """
   @spec mutate_node(Struct) :: Struct
   def mutate_node_from_struct(node_struct) do
-    Logger.debug " "
-    # Match the struct name
-    %{__struct__: struct_name} = node_struct
-    Logger.debug fn -> "💡 struct_name #{inspect struct_name}" end
-
-    # Transform struct to map
-    map_from_struct = Map.from_struct(node_struct)
-    map_from_struct = Map.put(map_from_struct, :dex_node_type, struct_name)
-    Logger.debug fn -> "💡 map_from_structl############### #{inspect map_from_struct}" end
-
-# IO.puts "💡 node_struct #{inspect node_struct}"
-    #IO.puts "is_struct #{inspect is_struct(node_struct)}"
-    content =  map_from_struct #map_from_struct |> Enum.into(Map.new)
- #   IO.puts "💡 content #{inspect content}"
-    # Logger.warn "node_struct #{inspect content}"
-    mutate_string = "{\n  set {\n"
-    lambda =  fn ({predicate_key, object_value}, mutate_string)
-      when is_atom(object_value) and predicate_key == :dex_node_type ->
-        Logger.debug fn -> "💡 dex_node_type is_atom #{inspect object_value}" end
-        if is_unique_predicate?(predicate_key) do
-    #mutate_with_commit(~s({set{_:identifier <#{predicate}> #{object} .}}))
-        else
-    #mutate_with_commit(~s({set{_:identifier <#{predicate}> "#{object}" .}}))
-        #mutate_string <> object_value
-        end
-        Logger.debug fn -> "💡 predicate_key #{inspect predicate_key}" end
-        Logger.debug fn -> "💡 object_value #{inspect object_value}" end
-        mutate_string
-      {predicate_key, object_value}, mutate_string
-        when is_atom(object_value) and predicate_key != :dex_node_type ->
-          Logger.debug fn -> "💡 is_atom #{inspect object_value}" end
-          mutate_string
-          {predicate_key, object_value}, mutate_string
-          when  is_list(object_value) ->
-            Logger.debug fn -> "💡  #{inspect object_value}" end
-            mutate_string
-      {predicate_key, object_value}, mutate_string ->
-        Logger.debug fn -> "💡 object_value  #{inspect object_value}" end
-        object_value = if is_integer(object_value) do
-          Integer.to_string(object_value)
-        else
-          object_value
-        end
-        
-        mutate_string =
-          mutate_string <> "    _:identifier"
-          <> " \<" <> Atom.to_string(predicate_key) <> "\>"
-          <> " \"" <> object_value <> "\" . \n"
-        mutate_string
+    case node_struct do
+      %{__struct__: struct_name} ->  
+        %{__struct__: struct_name} = node_struct
+        map_from_struct = Map.from_struct(node_struct)
+        map_from_struct = Map.put(map_from_struct, :dex_node_type, struct_name)
+        mutate_node(map_from_struct)
+      _ ->
+        # Or: mutate_node(node_struct) But waht is with :dex_node_type
+        {:error, "The value is not a struct"}
     end
-    Logger.debug fn -> "💡 mutate_string #{inspect mutate_string}" end
-    Logger.debug fn -> "💡 content #{inspect content}" end
-    mutate_string = Enum.reduce(content, mutate_string, lambda)
-    mutate_string = mutate_string <> "  }\n}"
-    Logger.debug fn -> "💡 mutate_string #{mutate_string}" end
-    mutate_with_commit(mutate_string)
+  
   end
 
   @doc """
