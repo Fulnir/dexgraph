@@ -4,7 +4,7 @@ defmodule Dexgraph.MixProject do
   def project do
     [
       app: :dexgraph,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.5",
       start_permanent: Mix.env() == :prod,
       package: package(),
@@ -65,7 +65,7 @@ defmodule Dexgraph.MixProject do
   defp docs do
     [
       name: "Dexgraph",
-      #main: "README",
+      main: "README",
       extra_section: "guides",
       assets: "guides/images",
       formatters: ["html", "epub"],
@@ -73,8 +73,8 @@ defmodule Dexgraph.MixProject do
       source_url: "https://github.com/Fulnir/dexgraph",
       homepage_url: "https://github.com/Fulnir/dexgraph",
       extras: [
-        "README.md",
-        "guides/overview.md"
+        "README.md"
+        #,"guides/overview.md"
       ]
     ]
   end
