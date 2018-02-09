@@ -23,9 +23,8 @@ function quit {
 }
 
 function start {
-  echo "😴💤 Sleeping"
-	sleep $sleepTime
-  sleep $sleepTime
+  echo "😴💤 Sleeping function start server"
+	sleep 60
   echo -e "🛠 Starting first server."
   dgraph server --memory_mb 2048 --zero localhost:5082 -o 2
   # Wait for membership sync to happen.
@@ -39,16 +38,14 @@ function startZero {
   # To ensure dgraph doesn't start before dgraphzero.
 	# It takes time for zero to start on travis(mac).
   echo -e "🛠 dgraph zero is started ------------------------------------- \n"
-  echo "😴💤 Sleeping"
+  #echo "😴💤 Sleeping"
 	sleep $sleepTime
 }
 
 function testing {
   # Wait for membership sync to happen.
-  echo "😴💤 Sleeping"
-  sleep $sleepTime
-  echo "😴💤 Sleeping"
-  sleep $sleepTime
+  echo "😴💤 Sleeping function testing"
+  sleep 90
   echo -e "Testing."
   mix local.rebar --force
   mix local.hex --force
