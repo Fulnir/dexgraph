@@ -24,11 +24,11 @@ function quit {
 
 function start {
   echo "😴💤 Sleeping function start server"
-	sleep 60
+	sleep $sleepTime
   echo -e "🛠 Starting first server."
   dgraph server --memory_mb 2048 --zero localhost:5082 -o 2
   # Wait for membership sync to happen.
-  sleep $sleepTime
+  
   return 0
 }
 
