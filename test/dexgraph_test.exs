@@ -15,6 +15,7 @@ defmodule DexGraphTest do
     @testing_schema "id: string @index(exact).
       name: string @index(exact, term) @count .
       age: int @index(int) .
+      alchemist: bool .
       friend: uid @count .
       dob: dateTime .
       location: geo @index(geo) .
@@ -159,6 +160,17 @@ defmodule DexGraphTest do
             person = %{person_id: "Edwin", name: "Ed", alchemist: true, age: 99}
             {:error, message} = mutate_node_from_struct(person)  
             assert "The value is not a struct" == message
+        end
+        test "Find person and return all values" do
+            person = %Person{person_id: "EdwinBuehler", name: "Ede", alchemist: "true", age: 99}
+            assert "EdwinBuehler" == person.person_id
+            {:ok, node} = mutate_node_from_struct(person)
+            {:ok, node} = query_node("name", "Ede", ["age", "alchemist", "person_id"])
+            assert "Ede" == node["name"]
+            assert "EdwinBuehler" == node["person_id"]
+            assert true == node["alchemist"]
+            assert "true" != node["alchemist"]
+            assert 99 == node["age"]
         end
     end
 
