@@ -12,7 +12,6 @@ defmodule DexGraphTest do
     #alias DexGraph.Person
     require Logger
 
-
     @testing_schema "id: string @index(exact).
       name: string @index(exact, term) @count .
       age: int @index(int) .
@@ -114,7 +113,8 @@ defmodule DexGraphTest do
         {:ok, node} = query_node("name", "Edwin Bühler")
         assert "Edwin Bühler" == node["name"]
         {:ok, node} = mutate_node("id", "EdwinBühler")
-        identifier = node["uids"]["identifier"]    
+        identifier = node["uids"]["identifier"]
+        {:ok, node} = query_node("id", "EdwinBühler")
         {:ok, _} = mutate_node(identifier, "id", "EdwinBühler")
         {:ok, node} = query_node("name", "Edwin Bühler")
         assert "Edwin Bühler" == node["name"]
@@ -122,25 +122,43 @@ defmodule DexGraphTest do
         assert identifier == node["uid"]
     end
 
-    test "Add node as struct" do
+    test "Add node as map" do
         {:ok, node} = mutate_node(%{dex_node_type: :person,
         name: "Edwin", address: "Wassenberg"})
         assert "Success" == node["code"]
     end
 
     describe "Dexgraph" do
+        test "Create a map and mutate to db" do
+            person = %{dex_node_type: :person, person_id: "Edwin", name: "Ed", alchemist: false, gender: :female, age: 99}
+            assert "Edwin" == person.person_id
+            assert false == person.alchemist
+            assert 99 == person.age
+            assert :female == person.gender
+            {:ok, node} = mutate_node(person)
+            assert "Success" == node["code"]
+            {:ok, node} = query_node("name", "Ed")
+            assert "Ed" == node["name"]
+        end
         test "Create a person and mutate to db" do
-
-            #IO.puts  "Create a primitive thing"
-            thing = %Person{thing_id: "MyThing", locked: false}
-            
-            assert "MyThing" == thing.thing_id
-            assert false == thing.locked
+            #IO.puts  "Create a primitive thing" gender: :male, ,  age: 99
+            person = %Person{person_id: "Edwin", name: "Ed", alchemist: true, gender: :male, age: 99}
+            assert "Edwin" == person.person_id
+            assert true == person.alchemist
+            assert :male == person.gender
+            assert 99 == person.age
             #thing_map = Map.from_struct(thing)
             #IO.puts "Add thing as struct #{inspect thing_map}"
-            {:ok, node} = mutate_node_from_struct(thing)
-            #{:ok, node} = Thing.mutate_thing(thing)
+            {:ok, node} = mutate_node_from_struct(person)
+        #    Logger.debug fn -> "💡 node #{node["uids"]["identifier"]}" end
             assert "Success" == node["code"]
+            {:ok, node} = query_node("name", "Ed")
+            assert "Ed" == node["name"]
+        end
+        test "Create a map and use mutate_node_from_struct" do
+            person = %{person_id: "Edwin", name: "Ed", alchemist: true, age: 99}
+            {:error, message} = mutate_node_from_struct(person)  
+            assert "The value is not a struct" == message
         end
     end
 
