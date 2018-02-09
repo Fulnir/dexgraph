@@ -130,10 +130,11 @@ defmodule DexGraphTest do
 
     describe "Dexgraph" do
         test "Create a map and mutate to db" do
-            person = %{dex_node_type: :person, person_id: "Edwin", name: "Ed", alchemist: false, age: 99}
+            person = %{dex_node_type: :person, person_id: "Edwin", name: "Ed", alchemist: false, gender: :female, age: 99}
             assert "Edwin" == person.person_id
             assert false == person.alchemist
             assert 99 == person.age
+            assert :female == person.gender
             {:ok, node} = mutate_node(person)
             assert "Success" == node["code"]
             {:ok, node} = query_node("name", "Ed")
@@ -141,10 +142,10 @@ defmodule DexGraphTest do
         end
         test "Create a person and mutate to db" do
             #IO.puts  "Create a primitive thing" gender: :male, ,  age: 99
-            person = %Person{person_id: "Edwin", name: "Ed", alchemist: true, age: 99}
+            person = %Person{person_id: "Edwin", name: "Ed", alchemist: true, gender: :male, age: 99}
             assert "Edwin" == person.person_id
             assert true == person.alchemist
-            #assert :male == person.gender
+            assert :male == person.gender
             assert 99 == person.age
             #thing_map = Map.from_struct(thing)
             #IO.puts "Add thing as struct #{inspect thing_map}"
