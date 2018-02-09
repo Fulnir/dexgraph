@@ -28,18 +28,24 @@ function start {
   # Wait for membership sync to happen.
   
   sleep $sleepTime
+  echo -e "🛠 dgraph zero is started ------------------------------------- \n"
   return 0
 }
 
 function startZero {
+  echo "😴💤 Sleeping"
+	sleep $sleepTime
+  sleep $sleepTime
+  sleep $sleepTime
+  sleep $sleepTime
 	echo -e "🛠 Starting dgraph zero.\n"
   dgraph zero --port_offset -1998
   # To ensure dgraph doesn't start before dgraphzero.
 	# It takes time for zero to start on travis(mac).
-  echo -e "🛠 dgraph zero ios started ------------------------------------- \n"
+
   echo "😴💤 Sleeping"
 	sleep $sleepTime
-  echo -e "🛠 dgraph zero ios started ------------3------------------------- \n"
+  echo -e "🛠 dgraph zero is started ------------3------------------------- \n"
 }
 
 function testing {
