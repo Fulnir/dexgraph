@@ -2,6 +2,9 @@
 set -e
 set -x
 
+# For semaphoreci
+# Current obsolete.
+# Using direct commands
 source scripts/functions.sh
 
 startZero &

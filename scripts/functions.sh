@@ -24,10 +24,7 @@ function quit {
 
 function start {
   echo "😴💤 Sleeping"
-	sleep $sleepTime
-  sleep $sleepTime
-  sleep $sleepTime
-  sleep $sleepTime
+	sleep 60
   echo -e "🛠 Starting first server."
   # dgraph v1.0.3 ports changed 
   #dgraph server --memory_mb 2048 --zero localhost:5082 -o 2

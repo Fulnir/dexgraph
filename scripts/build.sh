@@ -2,6 +2,8 @@
 set -e
 set -x
 
+# For circleci
+
 source scripts/functions.sh
 
 startZero &
