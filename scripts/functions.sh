@@ -23,8 +23,15 @@ function quit {
 }
 
 function start {
+  echo "😴💤 Sleeping"
+	sleep $sleepTime
+  sleep $sleepTime
+  sleep $sleepTime
+  sleep $sleepTime
   echo -e "🛠 Starting first server."
-  dgraph server --memory_mb 2048 --zero localhost:5082 -o 2
+  # dgraph v1.0.3 ports changed 
+  #dgraph server --memory_mb 2048 --zero localhost:5082 -o 2
+  dgraph server --memory_mb 2048 --zero localhost:3082 -o 2
   # Wait for membership sync to happen.
   
   sleep $sleepTime
@@ -33,11 +40,7 @@ function start {
 }
 
 function startZero {
-  echo "😴💤 Sleeping"
-	sleep $sleepTime
-  sleep $sleepTime
-  sleep $sleepTime
-  sleep $sleepTime
+  
 	echo -e "🛠 Starting dgraph zero.\n"
   dgraph zero --port_offset -1998
   # To ensure dgraph doesn't start before dgraphzero.
