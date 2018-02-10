@@ -1,15 +1,15 @@
 defmodule DexGraph do
   @moduledoc """
-  
+
   ## A simple http based driver for dgraph.
-  
+
   #### dgraph is located at [dgraph.io](http://www.dgraph.io)
-  
+
   ### Constants
-  
+
   * `@unique_predicates` All unique predicates are defined in this constant.
   Used in `is_unique_predicate?()`
-  
+
   Copyright © 2018 Edwin Buehler. All rights reserved.
   """
 
@@ -65,9 +65,12 @@ defmodule DexGraph do
   Sendet ein dgraph mutate zum server
   """
   def mutate_with_commit(a_query) do
-  #  Logger.info fn -> "💡 a_query #{inspect a_query}" end
+    #  Logger.info fn -> "💡 a_query #{inspect a_query}" end
     headers = [{"X-Dgraph-CommitNow", "true"}]
-    post_response = HTTPoison.post("#{Application.get_env(:dexgraph, :server)}/mutate", a_query, headers)
+
+    post_response =
+      HTTPoison.post("#{Application.get_env(:dexgraph, :server)}/mutate", a_query, headers)
+
     get_data_from_response(post_response)
   end
 
@@ -82,10 +85,11 @@ defmodule DexGraph do
         # Logger.error "query #{inspect body}"
         case data = body["data"] do
           nil ->
-            #Logger.warn(List.first(body["errors"])["message"])
+            # Logger.warn(List.first(body["errors"])["message"])
             {:error, List.first(body["errors"])["message"]}
+
           _ ->
-  #          Logger.warn fn -> "💡 data #{inspect data}" end
+            #          Logger.warn fn -> "💡 data #{inspect data}" end
             {:ok, data}
         end
 
@@ -113,7 +117,7 @@ defmodule DexGraph do
   Returns a node for the given predicate and object.
 
   If no node found, it returns `{:not_found, %{"find_node" => []}}`
-  
+
   ## Examples
 
       iex> DexGraph.query_node("name", "Object Name")
@@ -121,18 +125,22 @@ defmodule DexGraph do
 
   """
   @spec query_node(String, String) :: String
-  def query_node(predicate, object) do
+  def query_node(predicate, object, node_values \\ []) do
+    lambda = fn other_predicate, other_value_predicates ->
+      other_value_predicates = other_value_predicates <> " " <> other_predicate
+    end
+
+    other_value_predicates = ""
+    other_value_predicates = Enum.reduce(node_values, other_value_predicates, lambda)
     query_string = "{
       find_node(func: eq(#{predicate}, \"#{object}\")) {
-          uid
-          #{predicate}
+          uid #{predicate}#{other_value_predicates}
       }
     }"
-#    Logger.error("Response: #{inspect(query_string)}")
+    #    Logger.error("Response: #{inspect(query_string)}")
     case query(query_string) do
       {:ok, response} ->
-#        Logger.warn("Response: #{inspect(response)}")
-
+        #        Logger.warn("Response: #{inspect(response)}")
         case List.first(response["find_node"]) do
           nil ->
             {:not_found, response}
@@ -197,44 +205,50 @@ defmodule DexGraph do
   @spec mutate_node(Map) :: Map
   def mutate_node(map_from_struct) do
     mutate_string = "{\n  set {\n"
-    lambda =  fn ({predicate_key, object_value}, mutate_string)
-      when is_atom(object_value) and predicate_key == :dex_node_type ->
- #       Logger.debug fn -> "💡 dex_node_type is_atom #{inspect object_value}" end
-        if is_unique_predicate?(predicate_key) do
-    #mutate_with_commit(~s({set{_:identifier <#{predicate}> #{object} .}}))
-        else
-    #mutate_with_commit(~s({set{_:identifier <#{predicate}> "#{object}" .}}))
-        #mutate_string <> object_value
-        end
- #       Logger.debug fn -> "💡 predicate_key #{inspect predicate_key}" end
-#        Logger.debug fn -> "💡 object_value #{inspect object_value}" end
-        mutate_string
+
+    lambda = fn
       {predicate_key, object_value}, mutate_string
-        when is_atom(object_value) and predicate_key != :dex_node_type ->
-#          Logger.debug fn -> "💡 is_atom #{inspect object_value}" end
-          mutate_string
-          {predicate_key, object_value}, mutate_string
-          when  is_list(object_value) ->
-#            Logger.debug fn -> "💡  #{inspect object_value}" end
-            mutate_string
-      {predicate_key, object_value}, mutate_string ->
-#        Logger.debug fn -> "💡 object_value  #{inspect object_value}" end
-        object_value = if is_integer(object_value) do
-          Integer.to_string(object_value)
+      when is_atom(object_value) and predicate_key == :dex_node_type ->
+        #       Logger.debug fn -> "💡 dex_node_type is_atom #{inspect object_value}" end
+        if is_unique_predicate?(predicate_key) do
+          # mutate_with_commit(~s({set{_:identifier <#{predicate}> #{object} .}}))
         else
-          object_value
+          # mutate_with_commit(~s({set{_:identifier <#{predicate}> "#{object}" .}}))
+          # mutate_string <> object_value
         end
-        
+
+        mutate_string
+
+      {predicate_key, object_value}, mutate_string
+      when is_atom(object_value) and predicate_key != :dex_node_type ->
+        # Logger.debug(fn -> "💡 #{inspect(predicate_key)} is_atom #{inspect(object_value)}" end)
+        mutate_string
+
+      {predicate_key, object_value}, mutate_string
+      when is_list(object_value) ->
+        #            Logger.debug fn -> "💡  #{inspect object_value}" end
+        mutate_string
+
+      {predicate_key, object_value}, mutate_string ->
+        object_value =
+          if is_integer(object_value) do
+            " \"" <> Integer.to_string(object_value) <> "\""
+          else
+            " \"" <> object_value <> "\""
+          end
+
         mutate_string =
-          mutate_string <> "    _:identifier"
-          <> " \<" <> Atom.to_string(predicate_key) <> "\>"
-          <> " \"" <> object_value <> "\" . \n"
+          mutate_string <>
+            "    _:identifier" <>
+            " \<" <> Atom.to_string(predicate_key) <> "\>" <> object_value <> " . \n"
+
+        # Logger.debug(fn -> "💡 mutate_string #{inspect(mutate_string)}" end)
         mutate_string
     end
- #   Logger.debug fn -> "💡 mutate_string #{inspect mutate_string}" end
+
+    #   Logger.debug fn -> "💡 mutate_string #{inspect mutate_string}" end
     mutate_string = Enum.reduce(map_from_struct, mutate_string, lambda)
     mutate_string = mutate_string <> "  }\n}"
- #   Logger.debug fn -> "💡 mutate_string #{mutate_string}" end
     mutate_with_commit(mutate_string)
   end
 
@@ -250,16 +264,16 @@ defmodule DexGraph do
   @spec mutate_node(Struct) :: Struct
   def mutate_node_from_struct(node_struct) do
     case node_struct do
-      %{__struct__: struct_name} ->  
+      %{__struct__: struct_name} ->
         %{__struct__: struct_name} = node_struct
         map_from_struct = Map.from_struct(node_struct)
         map_from_struct = Map.put(map_from_struct, :dex_node_type, struct_name)
         mutate_node(map_from_struct)
+
       _ ->
         # Or: mutate_node(node_struct) But waht is with :dex_node_type
         {:error, "The value is not a struct"}
     end
-  
   end
 
   @doc """
@@ -270,7 +284,7 @@ defmodule DexGraph do
   The predicate <id> is mostly unique. The predicate <name> not
 
   Sample list: `@unique_predicates [:id]`
-  
+
   ## Examples
 
       iex> DexGraph.is_unique_predicate?(:id)
