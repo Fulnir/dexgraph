@@ -242,7 +242,7 @@ defmodule DexGraph do
             "    _:identifier" <>
             " \<" <> Atom.to_string(predicate_key) <> "\>" <> object_value <> " . \n"
 
-        #Logger.debug(fn -> "💡 mutate_string #{inspect(mutate_string)}" end)
+        # Logger.debug(fn -> "💡 mutate_string #{inspect(mutate_string)}" end)
         mutate_string
     end
 

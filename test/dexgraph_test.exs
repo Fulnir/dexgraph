@@ -1,18 +1,17 @@
 defmodule DexGraphTest do
-    @moduledoc """
-    #
-    # Copyright © 2018 Edwin Buehler. All rights reserved.
-    #
-    """
-    use ExUnit.Case
-    doctest DexGraph
+  @moduledoc """
+  
+  Copyright © 2018 Edwin Buehler. All rights reserved.
+  """
+  use ExUnit.Case
+  doctest DexGraph
 
-    import DexGraph
-    #import Person
-    #alias DexGraph.Person
-    require Logger
+  import DexGraph
+  # import Person
+  # alias DexGraph.Person
+  require Logger
 
-    @testing_schema "id: string @index(exact).
+  @testing_schema "id: string @index(exact).
       name: string @index(exact, term) @count .
       age: int @index(int) .
       alchemist: bool .
@@ -21,9 +20,9 @@ defmodule DexGraphTest do
       location: geo @index(geo) .
       occupations: [string] @index(term) ."
 
-    # Der Tokenizer funktioniert nicht für alle Sprachen.
-    # Deshalb im Test term für das Schema benutzen.
-    @testing_data ~s({
+  # Der Tokenizer funktioniert nicht für alle Sprachen.
+  # Deshalb im Test term für das Schema benutzen.
+  @testing_data ~s({
     set {
       _:michael <name> "Michael" .
       _:michael <age> "39" .
@@ -79,99 +78,111 @@ defmodule DexGraphTest do
   }          
   )
 
-    setup_all do
-        IO.puts "DexGraph setup all: #{Application.get_env(:dexgraph, :server)}"
-        # Komplette Datenbank löschen
-        alter("{\"drop_all\": true}")
-        # Schema
-        write_schema(@testing_schema)
-        # Daten
-        _ = write_testing_data(@testing_data)
-        :ok
-    end
-
-    test "Query unknown node" do
-        {result_atom, _} = query_node("name", "test_dummy")
-        assert :not_found == result_atom
-    end
-
-    test "Is the predicate unique?" do
-        assert true == is_unique_predicate?(:id)
-        assert false == is_unique_predicate?(:friend)
-    end
-
-    test "Query node" do
-        {:ok, node} = query_node("name", "Michael")
-        assert "Michael" == node["name"]
-    end
-
-    test "Query 'schema {}'" do
-        _ = query_schema()
-    end
-
-    test "Add node" do
-        {:ok, _} = mutate_node("name", "Edwin Bühler")
-        {:ok, node} = query_node("name", "Edwin Bühler")
-        assert "Edwin Bühler" == node["name"]
-        {:ok, node} = mutate_node("id", "EdwinBühler")
-        identifier = node["uids"]["identifier"]
-        {:ok, node} = query_node("id", "EdwinBühler")
-        {:ok, _} = mutate_node(identifier, "id", "EdwinBühler")
-        {:ok, node} = query_node("name", "Edwin Bühler")
-        assert "Edwin Bühler" == node["name"]
-        {:ok, node} = query_node("id", "EdwinBühler")
-        assert identifier == node["uid"]
-    end
-
-    test "Add node as map" do
-        {:ok, node} = mutate_node(%{dex_node_type: :person,
-        name: "Edwin", address: "Wassenberg"})
-        assert "Success" == node["code"]
-    end
-
-    describe "Dexgraph" do
-        test "Create a map and mutate to db" do
-            person = %{dex_node_type: :person, person_id: "Edwin", name: "Ed", alchemist: false, gender: :female, age: 99}
-            assert "Edwin" == person.person_id
-            assert false == person.alchemist
-            assert 99 == person.age
-            assert :female == person.gender
-            {:ok, node} = mutate_node(person)
-            assert "Success" == node["code"]
-            {:ok, node} = query_node("name", "Ed")
-            assert "Ed" == node["name"]
-        end
-        test "Create a person and mutate to db" do
-            #IO.puts  "Create a primitive thing" gender: :male, ,  age: 99
-            person = %Person{person_id: "Edwin", name: "Ed", alchemist: true, gender: :male, age: 99}
-            assert "Edwin" == person.person_id
-            assert true == person.alchemist
-            assert :male == person.gender
-            assert 99 == person.age
-            #thing_map = Map.from_struct(thing)
-            #IO.puts "Add thing as struct #{inspect thing_map}"
-            {:ok, node} = mutate_node_from_struct(person)
-        #    Logger.debug fn -> "💡 node #{node["uids"]["identifier"]}" end
-            assert "Success" == node["code"]
-            {:ok, node} = query_node("name", "Ed")
-            assert "Ed" == node["name"]
-        end
-        test "Create a map and use mutate_node_from_struct" do
-            person = %{person_id: "Edwin", name: "Ed", alchemist: true, age: 99}
-            {:error, message} = mutate_node_from_struct(person)  
-            assert "The value is not a struct" == message
-        end
-        test "Find person and return all values" do
-            person = %Person{person_id: "EdwinBuehler", name: "Ede", alchemist: "true", age: 99}
-            assert "EdwinBuehler" == person.person_id
-            {:ok, node} = mutate_node_from_struct(person)
-            {:ok, node} = query_node("name", "Ede", ["age", "alchemist", "person_id"])
-            assert "Ede" == node["name"]
-            assert "EdwinBuehler" == node["person_id"]
-            assert true == node["alchemist"]
-            assert "true" != node["alchemist"]
-            assert 99 == node["age"]
-        end
-    end
-
+  setup_all do
+    IO.puts("DexGraph setup all: #{Application.get_env(:dexgraph, :server)}")
+    # Komplette Datenbank löschen
+    alter("{\"drop_all\": true}")
+    # Schema
+    write_schema(@testing_schema)
+    # Daten
+    _ = write_testing_data(@testing_data)
+    :ok
   end
+
+  test "Query unknown node" do
+    {result_atom, _} = query_node("name", "test_dummy")
+    assert :not_found == result_atom
+  end
+
+  test "Is the predicate unique?" do
+    assert true == is_unique_predicate?(:id)
+    assert false == is_unique_predicate?(:friend)
+  end
+
+  test "Query node" do
+    {:ok, node} = query_node("name", "Michael")
+    assert "Michael" == node["name"]
+  end
+
+  test "Query 'schema {}'" do
+    _ = query_schema()
+  end
+
+  test "Add node" do
+    {:ok, _} = mutate_node("name", "Edwin Bühler")
+    {:ok, node} = query_node("name", "Edwin Bühler")
+    assert "Edwin Bühler" == node["name"]
+    {:ok, node} = mutate_node("id", "EdwinBühler")
+    identifier = node["uids"]["identifier"]
+    {:ok, node} = query_node("id", "EdwinBühler")
+    {:ok, _} = mutate_node(identifier, "id", "EdwinBühler")
+    {:ok, node} = query_node("name", "Edwin Bühler")
+    assert "Edwin Bühler" == node["name"]
+    {:ok, node} = query_node("id", "EdwinBühler")
+    assert identifier == node["uid"]
+  end
+
+  test "Add node as map" do
+    {:ok, node} = mutate_node(%{dex_node_type: :person, name: "Edwin", address: "Wassenberg"})
+    assert "Success" == node["code"]
+  end
+
+  describe "Dexgraph" do
+    test "Create a map and mutate to db" do
+      person = %{
+        dex_node_type: :person,
+        person_id: "Edwin",
+        name: "Ed",
+        alchemist: false,
+        gender: :female,
+        age: 99
+      }
+
+      assert "Edwin" == person.person_id
+      assert false == person.alchemist
+      assert 99 == person.age
+      assert :female == person.gender
+      {:ok, node} = mutate_node(person)
+      assert "Success" == node["code"]
+      {:ok, node} = query_node("name", "Ed")
+      assert "Ed" == node["name"]
+    end
+
+    test "Create a person and mutate to db" do
+      # IO.puts  "Create a primitive thing" gender: :male, ,  age: 99
+      person = %Person{person_id: "Edwin", name: "Ed", alchemist: true, gender: :male, age: 99}
+      assert "Edwin" == person.person_id
+      assert true == person.alchemist
+      assert :male == person.gender
+      assert 99 == person.age
+      # thing_map = Map.from_struct(thing)
+      # IO.puts "Add thing as struct #{inspect thing_map}"
+      {:ok, node} = mutate_node_from_struct(person)
+      #    Logger.debug fn -> "💡 node #{node["uids"]["identifier"]}" end
+      assert "Success" == node["code"]
+      {:ok, node} = query_node("name", "Ed")
+      assert "Ed" == node["name"]
+    end
+
+    test "Create a map and use mutate_node_from_struct" do
+      person = %{person_id: "Edwin", name: "Ed", alchemist: true, age: 99}
+      {:error, message} = mutate_node_from_struct(person)
+      assert "The value is not a struct" == message
+    end
+
+    test "Find person and return all values" do
+      person = %Person{person_id: "EdwinBuehler", name: "Ede", alchemist: "true", age: 99}
+      assert "EdwinBuehler" == person.person_id
+      {:ok, node} = mutate_node_from_struct(person)
+      {:ok, node} = query_node("name", "Ede", ["age", "alchemist", "person_id"])
+      assert "Ede" == node["name"]
+      assert "EdwinBuehler" == node["person_id"]
+      assert true == node["alchemist"]
+      assert "true" != node["alchemist"]
+      assert 99 == node["age"]
+      {:ok, node} = query_node("age", 99, ["name", "alchemist", "person_id"])
+      assert 99 == node["age"]
+      assert "Ede" == node["name"]
+    end
+  end
+end
