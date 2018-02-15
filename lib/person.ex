@@ -14,6 +14,7 @@ defmodule Person do
     defstruct person_id: String,
         address: [],
         name: String,
+        friend: [],
         alchemist: false,
         gender: Atom,
         age: Integer,
