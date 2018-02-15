@@ -24,3 +24,6 @@ Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_do
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/dexgraph](https://hexdocs.pm/dexgraph).
 
+
+
+Copyright © 2018 Edwin Bühler  [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE.txt)

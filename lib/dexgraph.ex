@@ -137,10 +137,10 @@ defmodule DexGraph do
           uid #{predicate}#{other_value_predicates}
       }
     }"
-    #    Logger.error("Response: #{inspect(query_string)}")
+    # Logger.debug("Response: #{inspect(query_string)}")
     case query(query_string) do
       {:ok, response} ->
-        #        Logger.warn("Response: #{inspect(response)}")
+        # Logger.debug("Response: #{inspect(response)}")
         case List.first(response["find_node"]) do
           nil ->
             {:not_found, response}
@@ -162,7 +162,7 @@ defmodule DexGraph do
 
   ## Examples
 
-      iex> {:ok, node} = DexGraph.mutate_node("name", "Edwin Bühler")
+      iex> {:ok, node} = DexGraph.mutate_node("name", "Spock")
       ...>node["code"]
       "Success"
 
@@ -205,7 +205,7 @@ defmodule DexGraph do
   @spec mutate_node(Map) :: Map
   def mutate_node(map_from_struct) do
     mutate_string = "{\n  set {\n"
-
+    # TODO: Refactoring
     lambda = fn
       {predicate_key, object_value}, mutate_string
       when is_atom(object_value) and predicate_key == :dex_node_type ->
@@ -221,12 +221,44 @@ defmodule DexGraph do
 
       {predicate_key, object_value}, mutate_string
       when is_atom(object_value) and predicate_key != :dex_node_type ->
-        # Logger.debug(fn -> "💡 #{inspect(predicate_key)} is_atom #{inspect(object_value)}" end)
         mutate_string
 
       {predicate_key, object_value}, mutate_string
       when is_list(object_value) ->
-        #            Logger.debug fn -> "💡  #{inspect object_value}" end
+        list_mutate_string = ""
+
+        lambda_list_element = fn each, list_mutate_string ->
+          list_mutate_string =
+            case each do
+              %{__struct__: struct_name} ->
+                %{__struct__: struct_name} = each
+                map_from_struct = Map.from_struct(each)
+                map_from_struct = Map.put(map_from_struct, :dex_node_type, struct_name)
+                {:ok, each_node} = mutate_node(map_from_struct)
+
+                list_mutate_string =
+                  if each_node["code"] == "Success" do
+                    identifier = each_node["uids"]["identifier"]
+                    list_mutate_string <>
+                      "    _:identifier" <>
+                      " \<" <>
+                      Atom.to_string(predicate_key) <>
+                      "\> " <> " \<" <> identifier <> "\>" <> " . \n"
+                  else
+                    list_mutate_string
+                  end
+
+                list_mutate_string
+
+              _ ->
+                list_mutate_string <> ""
+            end
+
+          list_mutate_string
+        end
+
+        list_mutate_string = Enum.reduce(object_value, list_mutate_string, lambda_list_element)
+        mutate_string = mutate_string <> list_mutate_string
         mutate_string
 
       {predicate_key, object_value}, mutate_string ->
@@ -242,13 +274,13 @@ defmodule DexGraph do
             "    _:identifier" <>
             " \<" <> Atom.to_string(predicate_key) <> "\>" <> object_value <> " . \n"
 
-        # Logger.debug(fn -> "💡 mutate_string #{inspect(mutate_string)}" end)
         mutate_string
     end
 
-    #   Logger.debug fn -> "💡 mutate_string #{inspect mutate_string}" end
+    #       Logger.debug fn -> "💡 mutate_string #{inspect mutate_string}" end
     mutate_string = Enum.reduce(map_from_struct, mutate_string, lambda)
     mutate_string = mutate_string <> "  }\n}"
+    #    Logger.debug fn -> "💡  mutate_string #{inspect mutate_string}" end
     mutate_with_commit(mutate_string)
   end
 
