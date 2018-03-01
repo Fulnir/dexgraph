@@ -19,6 +19,7 @@ defmodule DexGraph do
   # Used in `is_unique_predicate?()``
   @unique_predicates [:id]
 
+
   @doc """
   This function is used to setup the test data for the
   unit tests. Called in `DexGraphTest.setup_all()`
@@ -205,7 +206,7 @@ defmodule DexGraph do
   @spec mutate_node(Map) :: Map
   def mutate_node(map_from_struct) do
     mutate_string = "{\n  set {\n"
-    # TODO: Refactoring
+    # TODO: Refactoring. Function to long.
     lambda = fn
       {predicate_key, object_value}, mutate_string
       when is_atom(object_value) and predicate_key == :dex_node_type ->
@@ -325,5 +326,34 @@ defmodule DexGraph do
   """
   def is_unique_predicate?(predicate) do
     Enum.member?(@unique_predicates, predicate)
+  end
+
+  # Gremlin
+  @doc """
+  AddVertex Step
+  """
+  @spec addV(Graph, Struct) :: Struct
+  def addV(graph, struct) do
+    vertex_struct = struct(struct)
+    %{__struct__: vertex_type} = vertex_struct
+    vertex_type = String.trim_leading(Atom.to_string(vertex_type), "Elixir.")
+    {:ok, node} = mutate_node("vertex_type", vertex_type)
+    subject_uid = if node["code"] == "Success" do
+      subject_uid = node["uids"]["identifier"]
+    else
+      # TODO: error exception
+    end
+    Vertex.new(subject_uid, vertex_struct)
+  end
+
+  @doc """
+  AddProperty Step
+  """
+  @spec property(Vertex, String, String) :: Vertex
+  def property(vertex, predicate, object) do
+    Logger.info fn -> "💡 vertex #{inspect vertex}" end
+    {:ok, node} = mutate_node(vertex.uid, predicate, object)
+    # TODO: update struct in vertex
+    vertex
   end
 end

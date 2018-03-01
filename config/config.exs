@@ -39,3 +39,6 @@ if Mix.env == :dev do
       ],
       clear: true
   end
+
+  config :dexgraph,
+  server: "http://localhost:8082" # 8082
