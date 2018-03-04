@@ -5,8 +5,8 @@ defmodule GremlinAddTest do
     """
     use ExUnit.Case
     doctest DexGraph
-  
     import DexGraph
+    import Gremlin
     # import Person
     # alias DexGraph.Person
     require Logger
