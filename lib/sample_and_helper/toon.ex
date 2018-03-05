@@ -1,8 +1,7 @@
-defmodule Toon do
-  @moduledoc """
-  """
+defmodule DexGraph.Gremlin.Toon do
+  @moduledoc false
 
-  alias Toon
+  alias DexGraph.Gremlin.Toon
 
   @doc """
   A sample struct
