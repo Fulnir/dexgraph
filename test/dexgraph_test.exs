@@ -8,7 +8,7 @@ defmodule DexGraphTest do
 
   import DexGraph
   # import Person
-  # alias DexGraph.Person
+  alias DexGraph.Gremlin.Person
   require Logger
 
   @testing_schema "id: string @index(exact).

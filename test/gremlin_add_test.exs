@@ -6,7 +6,11 @@ defmodule GremlinAddTest do
     use ExUnit.Case
     doctest DexGraph
     import DexGraph
-    import Gremlin
+    import DexGraph.Gremlin
+    alias DexGraph.Gremlin.Toon
+    alias DexGraph.Gremlin.Person
+    alias DexGraph.Gremlin.Graph
+   
     # import Person
     # alias DexGraph.Person
     require Logger
@@ -103,7 +107,7 @@ defmodule GremlinAddTest do
             |> property("type", "Toon")
       {:ok, node} = query_node("name", "Bugs Bunny", ["age", "type", "vertex_type"])
       assert "Bugs Bunny" == node["name"]
-      assert "Person" == node["vertex_type"]
+      assert "DexGraph.Gremlin.Person" == node["vertex_type"]
       assert "Toon" == node["type"]
       #
       {:ok, node} = mutate_node("id", "Duffy")

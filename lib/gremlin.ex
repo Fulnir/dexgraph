@@ -1,63 +1,104 @@
-defmodule Gremlin do
+defmodule DexGraph.Gremlin do
   @moduledoc """
   Experimental gremlin helper functions
-  http://tinkerpop.apache.org/docs/current/reference/#graph-traversal-steps
+  See ![Traversal Steps](http://tinkerpop.apache.org/docs/current/reference/#graph-traversal-steps)
+
+
+  ![Gremlin](http://tinkerpop.apache.org/docs/current/images/gremlin-logo.png)
+
+  # Gremlin graph support
+
+  In this case, only elixir functions which simulate gremlin.
+
+  ## Gremlin Steps
+
+  ### AddVertex Step
+  The `addV`-step is used to add vertices to the graph ([addV step](http://tinkerpop.apache.org/docs/current/reference/#addvertex-step))
+
+
+  The following Gremlin statement inserts a "toon" vertex into the graph
+  ```
+  gremlin> g.addV('toon')
+  ==>v[13]
+  ```
+
+  And now with **Elixir**.
+  ```elixir
+  {:ok, channel} = GRPC.Stub.connect(Application.get_env(:exdgraph, :dgraphServerGRPC))
+  {:ok, graph} = Graph.new(channel)
+
+  graph
+  |> addV(Toon)
+  ```
+  The first lines create the `Graph` and connect it to `dgraph`. These are not listed in all samples.
+
+  ### AddProperty Step
+  The `property`-step is used to add properties to the elements of the graph. ([property step](http://tinkerpop.apache.org/docs/current/reference/#addproperty-step))
+
+  The following Gremlin statement inserts the "*Bugs Bunny*" vertex into the graph
+  ```
+  gremlin> g.addV('toon').property('name','Bugs Bunny').property('type','Toon')
+  ==>v[13]
+  ```
+
+  And now with **Elixir**.
+  ```elixir
+  {:ok, channel} = GRPC.Stub.connect(Application.get_env(:exdgraph, :dgraphServerGRPC))
+  {:ok, graph} = Graph.new(channel)
+
+  graph
+  |> addV(Toon)
+  |> property("name", "Bugs Bunny")
+  |> property("type", "Toon")
+  ```
+
+  ### AddEdge Step
+  The `addE`-step is used to add an edge between two vertices  ([addE step](http://tinkerpop.apache.org/docs/current/reference/#addedge-step)) 
+
+
+  ```elixir
+  marko =
+    graph
+    |> addV(Person)
+    |> property("name", "Makro")
+
+  peter =
+    graph
+    |> addV(Person)
+    |> property("name", "Peter")
+
+  # gremlin> g.addE('knows').from(marko).to(peter)
+  graph
+  |> addE("knows")
+  |> from(marko)
+  |> to(peter)
+  ```
+
+  ###  V Step
+
+
+  ```elixir
+  edwin =
+    graph
+    |> addV(Person)
+    |> property("name", "Edwin")
+  # Get a vertex with the unique identifier.
+  vertex =
+    graph
+    |> v(edwin.uid)
+  ```
+
   """
-  import DexGraph
+
   require Logger
+  import DexGraph
+  import DexGraph.Gremlin.LowLevel
+  import DexGraph.Gremlin.Graph
+  alias DexGraph.Gremlin.Vertex
+  alias DexGraph.Gremlin.Edge
 
-  @doc """
-  Sendet ein dgraph mutate zum server
-  """
-  # def mutate_with_commit(a_query) do
-  #   #  Logger.info fn -> "💡 a_query #{inspect a_query}" end
-  #   headers = [{"X-Dgraph-CommitNow", "true"}]
+  # TODO: @type .....
 
-  #   post_response =
-  #     HTTPoison.post("#{Application.get_env(:dexgraph, :server)}/mutate", a_query, headers)
-
-  #     DexGraph.get_data_from_response(post_response)
-  # end
-
-  @doc """
-  Creates the nquad and send it as mutaion request with a commit
-  """
-  def mutate_vertex(graph, predicate, object) do
-    #mutate_with_commit(~s(_:identifier <#{predicate}> "#{object}" .))
-    mutate_with_commit(~s({set{_:identifier <#{predicate}> "#{object}" .}}))
-  end
-
-  @doc """
-  Creates the nquad and send it as mutaion request with a commit
-  """
-  def mutate_vertex(graph, subject_uid, predicate, object) do
-    #mutate_with_commit(~s(<#{subject_uid}> <#{predicate}> "#{object}" .))
-    mutate_with_commit(~s({set{<#{subject_uid}> <#{predicate}> "#{object}" .}}))
-  end
-
-  @doc """
-  Creates the nquad and send it as mutaion request with a commit
-  """
-  def mutate_edge(graph, subject_uid, predicate, object_uid) do
-    mutate_with_commit(~s({set{<#{subject_uid}> <#{predicate}> <#{object_uid}> .}}))
-  end
-
-  @doc """
-  
-  """
-  def query_vertex(graph, vertex_uid) do
-    channel = graph.channel
-    query = """
-    { vertex(func: uid(#{vertex_uid})) { expand(_all_) } }
-    """
-    request = ExDgraph.Api.Request.new(query: query)
-    {:ok, msg} = channel |> ExDgraph.Api.Dgraph.Stub.query(request)
-    #Logger.info(fn -> "💡 msg.json: #{inspect msg.json}" end)
-    decoded_json = Poison.decode!(msg.json)
-    vertices = decoded_json["vertex"]
-    vertex_one = List.first(vertices)
-    for {key, val} <- vertex_one, into: %{}, do: {String.to_atom(key), val}
-  end
 
   @doc """
   ## AddVertex Step
