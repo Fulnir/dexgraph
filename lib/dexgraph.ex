@@ -309,6 +309,7 @@ defmodule DexGraph do
     end
   end
 
+
   @doc """
   This function check if the given predicate is unique. If so, then only one edge
   is allowed per node with this predicate. All unique predicates
