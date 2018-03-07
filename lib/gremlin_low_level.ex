@@ -41,7 +41,29 @@ defmodule DexGraph.Gremlin.LowLevel do
     mutate_with_commit(~s({set{<#{subject_uid}> <#{predicate}> <#{object_uid}> .}}))
   end
 
-@doc """
+  @doc """
+
+  """
+  def query_vertex(graph, vertex_uid) do
+    channel = graph.channel
+
+    query = """
+    { vertex(func: uid(#{vertex_uid})) { expand(_all_) } }
+    """
+
+    #request = ExDgraph.Api.Request.new(query: query)
+    #{:ok, msg} = channel |> ExDgraph.Api.Dgraph.Stub.query(request)
+    msg = query(query)
+    # Logger.info(fn -> "💡 msg.json: #{inspect msg.json}" end)
+    decoded_json = Poison.decode!(msg.json)
+    vertices = decoded_json["vertex"]
+    [vertex_one] = vertices
+    vertex = for {key, val} <- vertex_one, into: %{}, do: {String.to_atom(key), val}
+    struct_type = String.to_existing_atom("Elixir." <> vertex.vertex_type)
+    struct(struct_type, vertex)
+  end
+
+  @doc """
 
   """
   def query_vertex(graph, predicate, object, display) do
@@ -53,8 +75,9 @@ defmodule DexGraph.Gremlin.LowLevel do
     { vertices(func: anyofterms(#{predicate}, \"#{object}\")) { #{display} } }
     """
 
-    request = ExDgraph.Api.Request.new(query: query)
-    {:ok, msg} = channel |> ExDgraph.Api.Dgraph.Stub.query(request)
+    #request = ExDgraph.Api.Request.new(query: query)
+    #{:ok, msg} = channel |> ExDgraph.Api.Dgraph.Stub.query(request)
+    msg = query(query)
     decoded_json = Poison.decode!(msg.json)
     vertices = decoded_json["vertices"]
     Logger.info(fn -> "💡 vertices: #{inspect vertices}" end)
